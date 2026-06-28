@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Match, Player, teamLabel, ROUND_LABELS } from "@/lib/supabase";
 import { flagFor } from "@/lib/flags";
-import { suggestWinner } from "@/lib/scoring";
+import { suggestWinnerSide } from "@/lib/scoring";
 import ConfirmModal from "./ConfirmModal";
 import styles from "./PredictForm.module.scss";
 
@@ -19,7 +19,7 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
 
   const [homeScore, setHomeScore] = useState<string>("");
   const [awayScore, setAwayScore] = useState<string>("");
-  const [winner, setWinner] = useState<string>("");
+  const [winnerSide, setWinnerSide] = useState<"home" | "away" | "">("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -27,13 +27,14 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
   const hs = parseInt(homeScore, 10);
   const as = parseInt(awayScore, 10);
   const scoresValid = homeScore !== "" && awayScore !== "" && !isNaN(hs) && !isNaN(as) && hs >= 0 && as >= 0;
-  const autoWinner = scoresValid ? suggestWinner(home, away, hs, as) : "";
-  const effectiveWinner = winner || autoWinner;
+  const autoWinnerSide = scoresValid ? suggestWinnerSide(hs, as) : "";
+  const effectiveWinnerSide = winnerSide || autoWinnerSide;
   const isDraw = scoresValid && hs === as;
-  const canSubmit = scoresValid && effectiveWinner;
+  const canSubmit = scoresValid && effectiveWinnerSide;
+  const effectiveWinnerName = effectiveWinnerSide === "home" ? home : effectiveWinnerSide === "away" ? away : "";
 
-  function pickWinner(team: string) {
-    setWinner(team);
+  function pickWinner(side: "home" | "away") {
+    setWinnerSide(side);
   }
 
   async function confirmSubmit() {
@@ -47,7 +48,7 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
         player,
         predicted_home_score: hs,
         predicted_away_score: as,
-        predicted_winner: effectiveWinner,
+        predicted_winner_side: effectiveWinnerSide,
       }),
     });
     setSubmitting(false);
@@ -77,7 +78,7 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
           min={0}
           inputMode="numeric"
           value={homeScore}
-          onChange={(e) => { setHomeScore(e.target.value); setWinner(""); }}
+          onChange={(e) => { setHomeScore(e.target.value); setWinnerSide(""); }}
         />
         <span className={styles.dash}>–</span>
         <input
@@ -86,7 +87,7 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
           min={0}
           inputMode="numeric"
           value={awayScore}
-          onChange={(e) => { setAwayScore(e.target.value); setWinner(""); }}
+          onChange={(e) => { setAwayScore(e.target.value); setWinnerSide(""); }}
         />
         <div className={`${styles.team} ${styles.teamAway}`}>
           <span>{away}</span>
@@ -97,14 +98,14 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
       {isDraw && (
         <div className={styles.winnerRow}>
           <button
-            className={`${styles.winnerBtn} ${winner === home ? styles.selected : ""}`}
-            onClick={() => pickWinner(home)}
+            className={`${styles.winnerBtn} ${winnerSide === "home" ? styles.selected : ""}`}
+            onClick={() => pickWinner("home")}
           >
             {flagFor(home)} {home} (ET/pens)
           </button>
           <button
-            className={`${styles.winnerBtn} ${winner === away ? styles.selected : ""}`}
-            onClick={() => pickWinner(away)}
+            className={`${styles.winnerBtn} ${winnerSide === "away" ? styles.selected : ""}`}
+            onClick={() => pickWinner("away")}
           >
             {flagFor(away)} {away} (ET/pens)
           </button>
@@ -119,7 +120,7 @@ export default function PredictForm({ match, player, onSubmitted }: PredictFormP
       {showConfirm && (
         <ConfirmModal
           title="Lock it in?"
-          message={`${home} ${hs} – ${as} ${away}, winner: ${effectiveWinner}. You cannot change this. Are you sure?`}
+          message={`${home} ${hs} – ${as} ${away}, winner: ${effectiveWinnerName}. You cannot change this. Are you sure?`}
           confirmLabel={submitting ? "Submitting…" : "Submit"}
           onConfirm={confirmSubmit}
           onCancel={() => setShowConfirm(false)}

@@ -13,14 +13,18 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { match_id, player, predicted_home_score, predicted_away_score, predicted_winner } = body;
+  const { match_id, player, predicted_home_score, predicted_away_score, predicted_winner_side } = body;
 
-  if (!match_id || !player || predicted_home_score == null || predicted_away_score == null || !predicted_winner) {
+  if (!match_id || !player || predicted_home_score == null || predicted_away_score == null || !predicted_winner_side) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
   if (player !== "danya" && player !== "dima") {
     return NextResponse.json({ error: "Invalid player" }, { status: 400 });
+  }
+
+  if (predicted_winner_side !== "home" && predicted_winner_side !== "away") {
+    return NextResponse.json({ error: "Invalid winner side" }, { status: 400 });
   }
 
   const { data: match, error: matchError } = await supabase
@@ -56,7 +60,7 @@ export async function POST(request: NextRequest) {
       player,
       predicted_home_score,
       predicted_away_score,
-      predicted_winner,
+      predicted_winner_side,
     })
     .select()
     .single();

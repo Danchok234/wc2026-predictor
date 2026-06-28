@@ -33,7 +33,7 @@ export interface Prediction {
   player: Player;
   predicted_home_score: number;
   predicted_away_score: number;
-  predicted_winner: string;
+  predicted_winner_side: "home" | "away";
   submitted_at: string;
 }
 
@@ -66,4 +66,11 @@ export function teamLabel(match: Match, side: "home" | "away"): string {
 export function isLocked(match: Match): boolean {
   if (match.status !== "upcoming") return true;
   return new Date(match.match_date).getTime() <= Date.now();
+}
+
+export function actualWinnerSide(match: Match): "home" | "away" | null {
+  if (!match.actual_winner) return null;
+  if (match.actual_winner === match.home_team) return "home";
+  if (match.actual_winner === match.away_team) return "away";
+  return null;
 }

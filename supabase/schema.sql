@@ -32,7 +32,7 @@ create table predictions (
   player player_type not null,
   predicted_home_score int not null check (predicted_home_score >= 0),
   predicted_away_score int not null check (predicted_away_score >= 0),
-  predicted_winner text not null,
+  predicted_winner_side text not null check (predicted_winner_side in ('home', 'away')),
   submitted_at timestamptz not null default now(),
   unique (match_id, player)
 );

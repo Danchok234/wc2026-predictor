@@ -1,4 +1,4 @@
-import { Match, Prediction } from "./supabase";
+import { Match, Prediction, actualWinnerSide } from "./supabase";
 
 export interface ScoreResult {
   points: 0 | 1 | 3;
@@ -15,7 +15,7 @@ export function scorePrediction(match: Match, prediction: Prediction): ScoreResu
     prediction.predicted_home_score === match.actual_home_score &&
     prediction.predicted_away_score === match.actual_away_score;
 
-  const correctWinner = prediction.predicted_winner === match.actual_winner;
+  const correctWinner = prediction.predicted_winner_side === actualWinnerSide(match);
 
   if (exactScore) return { points: 3, exactScore: true, correctWinner };
   if (correctWinner) return { points: 1, exactScore: false, correctWinner: true };
@@ -47,8 +47,8 @@ export function tallyPlayer(
   return { total, byRound };
 }
 
-export function suggestWinner(homeTeam: string, awayTeam: string, homeScore: number, awayScore: number): string {
-  if (homeScore > awayScore) return homeTeam;
-  if (awayScore > homeScore) return awayTeam;
+export function suggestWinnerSide(homeScore: number, awayScore: number): "home" | "away" | "" {
+  if (homeScore > awayScore) return "home";
+  if (awayScore > homeScore) return "away";
   return "";
 }

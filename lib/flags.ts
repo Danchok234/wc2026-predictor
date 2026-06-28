@@ -11,6 +11,7 @@ const FLAGS: Record<string, string> = {
   Jamaica: "🇯🇲", "New Zealand": "🇳🇿", "Czech Republic": "🇨🇿", Scotland: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
   Slovakia: "🇸🇰", Hungary: "🇭🇺", Paraguay: "🇵🇾", Chile: "🇨🇱", Peru: "🇵🇪",
   Bolivia: "🇧🇴", Venezuela: "🇻🇪", "Republic of Ireland": "🇮🇪", Finland: "🇫🇮",
+  "South Africa": "🇿🇦", "DR Congo": "🇨🇩", "Bosnia and Herzegovina": "🇧🇦", "Cabo Verde": "🇨🇻",
 };
 
 export function flagFor(team: string | null): string {

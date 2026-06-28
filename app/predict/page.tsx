@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useMatchesAndPredictions } from "@/lib/hooks";
 import { getSessionPlayer, setSessionPlayer, clearSessionPlayer, verifyPin } from "@/lib/auth";
-import { Player, isLocked, teamLabel, PLAYER_NAMES } from "@/lib/supabase";
+import { Player, isLocked, PLAYER_NAMES } from "@/lib/supabase";
+import { resolveMatchTeams, isMatchReadyForPlayer } from "@/lib/bracket";
 import { flagFor } from "@/lib/flags";
 import PinModal from "@/components/PinModal";
 import PredictForm from "@/components/PredictForm";
@@ -61,7 +62,12 @@ export default function PredictPage() {
 
   const upcomingUnpredicted = matches
     .filter((m) => !isLocked(m) && !predictedMatchIds.has(m.id))
+    .filter((m) => isMatchReadyForPlayer(matches, predictions, player, m))
     .sort((a, b) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime());
+
+  const waitingOnOwnPicks = matches
+    .filter((m) => !isLocked(m) && !predictedMatchIds.has(m.id))
+    .filter((m) => !isMatchReadyForPlayer(matches, predictions, player, m)).length;
 
   const myLockedPicks = matches
     .filter((m) => predictedMatchIds.has(m.id))
@@ -77,11 +83,23 @@ export default function PredictPage() {
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Upcoming matches</div>
         {loading && <div className={styles.empty}>Loading…</div>}
-        {!loading && upcomingUnpredicted.length === 0 && (
+        {!loading && upcomingUnpredicted.length === 0 && waitingOnOwnPicks === 0 && (
           <div className={styles.empty}>No open matches to predict right now</div>
         )}
+        {!loading && upcomingUnpredicted.length === 0 && waitingOnOwnPicks > 0 && (
+          <div className={styles.empty}>
+            Pick the earlier rounds first — later matches unlock once you&apos;ve chosen who advances.
+          </div>
+        )}
         {upcomingUnpredicted.map((match) => (
-          <PredictForm key={match.id} match={match} player={player} onSubmitted={refresh} />
+          <PredictForm
+            key={match.id}
+            match={match}
+            matches={matches}
+            predictions={predictions}
+            player={player}
+            onSubmitted={refresh}
+          />
         ))}
       </div>
 
@@ -90,8 +108,9 @@ export default function PredictPage() {
           <div className={styles.sectionTitle}>Your locked picks</div>
           {myLockedPicks.map((match) => {
             const pred = myPredictions.find((p) => p.match_id === match.id)!;
-            const home = teamLabel(match, "home");
-            const away = teamLabel(match, "away");
+            const resolved = resolveMatchTeams(matches, predictions, player, match);
+            const home = resolved.home ?? "TBD";
+            const away = resolved.away ?? "TBD";
             return (
               <div key={match.id} className={styles.lockedCard}>
                 <span className={styles.lockedTeams}>

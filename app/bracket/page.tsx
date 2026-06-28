@@ -39,7 +39,7 @@ export default function BracketPage() {
                   <div className={styles.roundHeader}>{ROUND_LABELS[round]}</div>
                   {roundMatches.map((match) => (
                     <div key={match.id} className={styles.slot}>
-                      <MatchCard match={match} predictions={predictions} viewer={viewer} />
+                      <MatchCard match={match} matches={matches} predictions={predictions} viewer={viewer} />
                     </div>
                   ))}
                 </div>

@@ -46,7 +46,7 @@ export default function LeaderboardPage() {
           <div className={styles.empty}>No finished matches yet</div>
         )}
         {finishedMatches.map((match) => (
-          <MatchCard key={match.id} match={match} predictions={predictions} />
+          <MatchCard key={match.id} match={match} matches={matches} predictions={predictions} />
         ))}
       </div>
     </div>

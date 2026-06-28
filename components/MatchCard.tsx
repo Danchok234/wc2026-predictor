@@ -1,10 +1,12 @@
 import { Match, Prediction, Player, isLocked, teamLabel, ROUND_LABELS } from "@/lib/supabase";
+import { resolveMatchTeams } from "@/lib/bracket";
 import { flagFor } from "@/lib/flags";
 import { scorePrediction } from "@/lib/scoring";
 import styles from "./MatchCard.module.scss";
 
 interface MatchCardProps {
   match: Match;
+  matches?: Match[];
   predictions: Prediction[];
   viewer?: Player | null;
 }
@@ -16,7 +18,7 @@ function formatDate(dateStr: string): string {
     date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
-export default function MatchCard({ match, predictions, viewer }: MatchCardProps) {
+export default function MatchCard({ match, matches, predictions, viewer }: MatchCardProps) {
   const locked = isLocked(match);
   const danyaPred = predictions.find((p) => p.match_id === match.id && p.player === "danya");
   const dimaPred = predictions.find((p) => p.match_id === match.id && p.player === "dima");
@@ -25,6 +27,7 @@ export default function MatchCard({ match, predictions, viewer }: MatchCardProps
 
   const home = teamLabel(match, "home");
   const away = teamLabel(match, "away");
+  const teamsKnown = !!match.home_team && !!match.away_team;
   const hasResult = match.actual_home_score != null && match.actual_away_score != null;
 
   function renderPrediction(player: Player, pred: Prediction | undefined) {
@@ -46,9 +49,15 @@ export default function MatchCard({ match, predictions, viewer }: MatchCardProps
       );
     }
     const result = hasResult ? scorePrediction(match, pred) : null;
+    const resolved = !teamsKnown && matches ? resolveMatchTeams(matches, predictions, player, match) : null;
     return (
       <div className={styles.predictionBox}>
         <div className={styles.predictionName}>{player === "danya" ? "Danya" : "Dima"}</div>
+        {resolved && (resolved.home || resolved.away) && (
+          <div className={styles.predictionTeams}>
+            {flagFor(resolved.home)} {resolved.home ?? "TBD"} vs {resolved.away ?? "TBD"} {flagFor(resolved.away)}
+          </div>
+        )}
         <div className={styles.predictionScore}>
           {pred.predicted_home_score} – {pred.predicted_away_score}
         </div>

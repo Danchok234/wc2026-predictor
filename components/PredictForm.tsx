@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Match, Player, teamLabel, ROUND_LABELS } from "@/lib/supabase";
+import { Match, Player, Prediction, ROUND_LABELS } from "@/lib/supabase";
+import { resolveMatchTeams } from "@/lib/bracket";
 import { flagFor } from "@/lib/flags";
 import { suggestWinnerSide } from "@/lib/scoring";
 import ConfirmModal from "./ConfirmModal";
@@ -9,13 +10,16 @@ import styles from "./PredictForm.module.scss";
 
 interface PredictFormProps {
   match: Match;
+  matches: Match[];
+  predictions: Prediction[];
   player: Player;
   onSubmitted: () => void;
 }
 
-export default function PredictForm({ match, player, onSubmitted }: PredictFormProps) {
-  const home = teamLabel(match, "home");
-  const away = teamLabel(match, "away");
+export default function PredictForm({ match, matches, predictions, player, onSubmitted }: PredictFormProps) {
+  const resolved = resolveMatchTeams(matches, predictions, player, match);
+  const home = resolved.home ?? "TBD";
+  const away = resolved.away ?? "TBD";
 
   const [homeScore, setHomeScore] = useState<string>("");
   const [awayScore, setAwayScore] = useState<string>("");

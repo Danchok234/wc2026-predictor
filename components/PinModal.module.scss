@@ -1,0 +1,79 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.5rem;
+}
+
+.modal {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-bottom: 1.4rem;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--green);
+  background: transparent;
+
+  &.filled {
+    background: var(--green);
+  }
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.key {
+  background: var(--navy-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  padding: 0.9rem 0;
+
+  &:active {
+    background: rgba(0, 255, 135, 0.12);
+  }
+}
+
+.error {
+  color: var(--red);
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  min-height: 1.2em;
+}
+
+.cancel {
+  margin-top: 1rem;
+  color: var(--grey);
+  font-size: 0.85rem;
+  background: none;
+  border: none;
+}

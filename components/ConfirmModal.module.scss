@@ -1,0 +1,60 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.5rem;
+}
+
+.modal {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.8rem 1.5rem;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.message {
+  color: var(--grey);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.4rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.confirm,
+.cancel {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: 1px solid var(--border);
+}
+
+.confirm {
+  background: var(--green);
+  color: var(--navy);
+  border: none;
+}
+
+.cancel {
+  background: transparent;
+  color: var(--grey);
+}

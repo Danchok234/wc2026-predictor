@@ -1,0 +1,57 @@
+.page {
+  padding: 1.2rem 0 5.5rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.scroller {
+  overflow-x: auto;
+  padding: 0 1rem 1rem;
+}
+
+.bracket {
+  display: flex;
+  gap: 1.2rem;
+  align-items: stretch;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-width: 230px;
+}
+
+.roundHeader {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  position: sticky;
+  top: 0;
+}
+
+.slot {
+  position: relative;
+  margin: 0.4rem 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -1.2rem;
+    width: 1.2rem;
+    height: 1px;
+    background: var(--border);
+  }
+}
+
+.lastCol .slot::after {
+  display: none;
+}
